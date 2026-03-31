@@ -4,3 +4,6 @@ backgroundColor = "#171a22"     # Color de fondo (oscuro en este caso)
 secondaryBackgroundColor = "#262a36" # Color de las cajas de entrada
 textColor = "#FAFAFA"           # Color del texto
 font = "sans serif"             # Tipo de letra
+
+[client]
+toolbarMode = "hidden"
