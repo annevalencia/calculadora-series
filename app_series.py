@@ -143,7 +143,7 @@ list_frases_fin = ["Ya puedes estirar bien... 🧘‍♂️",
                    '¡Oleeee! Lo único, tus cuádriceps perfectamente pueden pedir la baja mañana 🚑',
                    'Bien hecho, ahora a esperar los Kuditos de los fans 🤠',
                    'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo no impresiona 😉',
-                   '¡Estupendo! Pero sube ya la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido ni un poquito 💔']
+                   '¡Estupendo! Pero sube ya la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔']
 
 # --- INICIALIZACIÓN DE MEMORIA (Sólo se ejecuta una vez al abrir la web) ---
 if 'lista_series' not in st.session_state:
@@ -158,6 +158,9 @@ if 'gracia_rit' not in st.session_state:
 if 'gracia_rit_2' not in st.session_state:
     st.session_state.gracia_rit_2 = True                   
 
+if 'form_id' not in st.session_state:
+    st.session_state.form_id = 0
+    
 
 # --- CONFIGURACIÓN DE LA APP ---
 st.set_page_config(page_title="Calculadora de series", page_icon="😎")
@@ -195,25 +198,40 @@ if 'lista_series' not in st.session_state:
 with st.form("entrada_serie"):
     st.subheader("Serie:")
     c1, c2 = st.columns(2)
+    
     with c1:
         # Dos subcolumnas dentro de c1 para mins y dist (para que no me descuadre)
         sub_col1, sub_col2 = st.columns(2)
+        
         with sub_col1:
-            # mins = st.number_input('Mins:', min_value=1, value=5)
-            mins_input = st.text_input('Minutos:', value= None, help="Ejemplo: 4:30 o 5")
+            # Añado KEY dinámica usando el form_id (para después poder limpiar los campos fácilmente)
+            mins_input = st.text_input('Minutos:', value= None, help="Ejemplo: 4:30 o 5", key=f"mins_{st.session_state.form_id}")
         with sub_col2:
-            dist = st.number_input('Kms:', min_value=0.0, value=None, step=0.5)
+            dist = st.number_input('Kms:', min_value=0.0, value=None, step=0.5, key=f"dist_{st.session_state.form_id}")
             
         # mins = st.number_input('Minutos de la serie:', min_value=1, value=5)
         # dist = st.number_input('Kms de la serie:', min_value=0, value=5)
-        ritmo = st.text_input('Ritmo (mins/km):', value="6:00")
+        ritmo = st.text_input('Ritmo (mins/km):', value="6:00", help="Ejemplo: 6:30 o 6:00", key=f"ritmo_{st.session_state.form_id}")
     with c2:
-        pendiente = st.number_input('Pendiente (%):', min_value=0, value=0)
-        n_rep = st.number_input('Número de repeticiones:', min_value=1, value=1)
+        pendiente = st.number_input('Pendiente (%):', min_value=0, value=0, key=f"pend_{st.session_state.form_id}")
+        n_rep = st.number_input('Número de repeticiones:', min_value=1, value=1, key=f"rep_{st.session_state.form_id}")
     
-    boton_añadir = st.form_submit_button("Añadir serie")
+    ## BOTONES - Añadir y Limpiar
+    col_bt1, col_bt2 = st.columns(2)
+    with col_bt1:    
+        boton_añadir = st.form_submit_button("Añadir serie")
+        
+    with col_bt2:
+        # Este botón "rompe" el form para resetearlo
+        boton_limpiar = st.form_submit_button("Limpiar 🧹")
 
 
+# Si limpian, aumenta el ID y se recarga
+if boton_limpiar:
+    st.session_state.form_id += 1
+    st.rerun()
+
+    
 # Al pulsar el botón, se aplica la función "serie_a_info"
 if boton_añadir:
     try:
@@ -282,13 +300,13 @@ if boton_añadir:
 # --- MOSTRAR RESULTADOS ---
 if st.session_state.lista_series:
     st.divider()
-    st.subheader("Resumen series acumuladas:")
+    st.subheader("Resumen de series acumuladas:")
     
     # Muestra tabla con lo que llevamos hasta ahora
     st.table(st.session_state.lista_series)
     
     # --- NUEVA SECCIÓN PARA ELIMINAR ---
-    with st.expander("❌ No te preocupes si te has equivocado en algo, puedes eliminar series aquí:"):
+    with st.expander("No te preocupes si te has equivocado en algo, puedes eliminar series aquí:"):
         # Creamos una lista de etiquetas para el selector (ej: "Serie 1", "Serie 2"...)
         opciones = [f"Serie {i}" for i in range(len(st.session_state.lista_series))]
         serie_a_borrar = st.selectbox("Elige cuál quieres borrar (fíjate en el índice de la izquierda de la tabla) y después dale a 'Eliminar serie':", opciones)
