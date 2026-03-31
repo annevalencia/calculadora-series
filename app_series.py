@@ -205,13 +205,13 @@ with st.form("entrada_serie"):
         
         with sub_col1:
             # Añado KEY dinámica usando el form_id (para después poder limpiar los campos fácilmente)
-            mins_input = st.text_input('Minutos:', value= None, help="Rellena este campo si has medido la serie según el tiempo (y no la distancia)\nAcepta tanto los formatos: 4:30 como 5, por ejemplo", key=f"mins_{st.session_state.form_id}")
+            mins_input = st.text_input('Minutos:', value= None, help="Rellena este campo si has medido la serie según el tiempo (y no la distancia). Acepta, por ejemplo, tanto los formatos '4:30' (4 mins y medio) como '5' (5 mins)", key=f"mins_{st.session_state.form_id}")
         with sub_col2:
-            dist = st.number_input('Kms:', min_value=0.0, value=None, help="Rellena este campo si has medido la serie según la distancia (y no el tiempo)\n", step=0.5, key=f"dist_{st.session_state.form_id}")
+            dist = st.number_input('Kms:', min_value=0.0, value=None, help="Rellena este campo si has medido la serie según la distancia (y no el tiempo)", step=0.5, key=f"dist_{st.session_state.form_id}")
             
         # mins = st.number_input('Minutos de la serie:', min_value=1, value=5)
         # dist = st.number_input('Kms de la serie:', min_value=0, value=5)
-        ritmo = st.text_input('Ritmo (mins/km):', value="6:00", help="Ejemplo: 6:30 o 6:00", key=f"ritmo_{st.session_state.form_id}")
+        ritmo = st.text_input('Ritmo (mins/km):', value="6:00", help="Acepta el formato mm:ss, por ejemplo: '6:30' o '6:00'", key=f"ritmo_{st.session_state.form_id}")
     with c2:
         pendiente = st.number_input('Pendiente (%):', min_value=0, value=0, key=f"pend_{st.session_state.form_id}")
         n_rep = st.number_input('Número de repeticiones:', min_value=1, value=1, key=f"rep_{st.session_state.form_id}")
