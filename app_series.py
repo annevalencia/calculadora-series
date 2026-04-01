@@ -235,7 +235,7 @@ with st.form("entrada_serie"):
             # Añado KEY dinámica usando el form_id (para después poder limpiar los campos fácilmente)
             mins_input = st.text_input('Minutos:', value= None, help="Rellena este campo si has medido la serie según el tiempo (y no la distancia). Acepta, por ejemplo, tanto los formatos '4:30' (4 mins y medio) como '5' (5 mins)", key=f"mins_{st.session_state.form_id}")
         with sub_col2:
-            dist = st.number_input('Kms:', min_value=0.0, value=None, help="Rellena este campo si has medido la serie según la distancia (y no el tiempo)", step=0.5, key=f"dist_{st.session_state.form_id}")
+            dist = st.number_input('Kms:', min_value=0.0, value=None, help="Rellena este campo si has medido la serie según la distancia (y no el tiempo). Para los decimales, tienes que usar el punto (.) en vez de la coma", step=0.5, key=f"dist_{st.session_state.form_id}")
             
         # mins = st.number_input('Minutos de la serie:', min_value=1, value=5)
         # dist = st.number_input('Kms de la serie:', min_value=0, value=5)
@@ -301,7 +301,7 @@ if boton_añadir:
                 
                 try:
                     prob_suerte = 0.5
-                    prob_suerte_2 = 0.65
+                    prob_suerte_2 = 0.75
                     # Generación de random (uniforme 0,1)
                     suerte = random.random()
                     
@@ -417,7 +417,7 @@ if st.session_state.lista_series:
         else:
             st.balloons()
         
-        st.header("🆙 RESUMEN ")
+        st.header("🤩 RESUMEN ")
         col1, col2, col3, col4 = st.columns(4)
         # col1.metric("Tiempo", f"{decimal_a_tiempo(mins_total)} min")
         col1.metric("Tiempo", f"{txt_tiempo_total}")
