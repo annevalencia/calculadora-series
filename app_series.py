@@ -64,14 +64,14 @@ def serie_a_info(mins_serie, dist_serie, ritmo, pendiente=0, n_rep=1):
     if mins_serie is None:
         ## TIEMPO
         # Calculo tiempo en función del ritmo y la distancia (* repes)
-        mins_total_serie = round(dist_serie * ritmo_decimal, 2) * n_rep
+        mins_total_serie = dist_serie * ritmo_decimal * n_rep
         dist_total_serie = dist_serie * n_rep
         
     # La serie va por TIEMPO
     if dist_serie is None:
         ## DISTANCIA
         # Calculo distancia en función del ritmo y el tiempo (* repes)
-        dist_total_serie = round(mins_serie / ritmo_decimal, 2) * n_rep
+        dist_total_serie = mins_serie / ritmo_decimal * n_rep
         mins_total_serie = mins_serie * n_rep
         
     
@@ -160,6 +160,13 @@ if 'gracia_rit_2' not in st.session_state:
 
 if 'form_id' not in st.session_state:
     st.session_state.form_id = 0
+
+# Saludo (para que se quede fijo y sólo saludo una vez cada vez que entra a la App, si no se genera un saludo nuevo cada vez que se sube una serie)
+if 'saludo_fijo' not in st.session_state:
+    hora_actual_dt = obtener_hora_local(zona_horaria)
+    st.session_state.saludo_fijo = saludar_segun_hora(hora_actual_dt.hour)
+    # # Guardo la hora del saludo para la caption
+    # st.session_state.hora_caption = f"{hora_actual_dt.hour:02d}:{hora_actual_dt.minute:02d}"
     
 
 
@@ -199,7 +206,8 @@ with col1:
 with col2:
     st.title("Calculadora de series 😎")
     # st.markdown(f'###### {saludo}')
-    st.write(saludo)
+    # Utilizo el saludo guardado en la sesión
+    st.write(st.session_state.saludo_fijo)
     
     # Zona y hora en pequeñito
     st.caption(f"{zona_horaria_txt}, {hora_h:02d}:{hora_actual_dt.minute:02d}")
@@ -227,7 +235,7 @@ with st.form("entrada_serie"):
             
         # mins = st.number_input('Minutos de la serie:', min_value=1, value=5)
         # dist = st.number_input('Kms de la serie:', min_value=0, value=5)
-        ritmo = st.text_input('Ritmo (mins/km):', value="6:00", help="Acepta el formato mm:ss, por ejemplo: '6:30' o '6:00'", key=f"ritmo_{st.session_state.form_id}")
+        ritmo = st.text_input('Ritmo (mins/km):', value=None, help="Acepta el formato mm:ss, por ejemplo: '6:30' o '6:00'", key=f"ritmo_{st.session_state.form_id}")
     with c2:
         pendiente = st.number_input('Pendiente (%):', min_value=0, value=0, key=f"pend_{st.session_state.form_id}")
         n_rep = st.number_input('Número de repeticiones:', min_value=1, value=1, key=f"rep_{st.session_state.form_id}")
@@ -250,67 +258,71 @@ if boton_limpiar:
     
 # Al pulsar el botón, se aplica la función "serie_a_info"
 if boton_añadir:
-    try:
-        # Por si acaso pendiente o n_repes se han quedado vacías (tomo por defecto 0% para la pendiente y 1 para las repes)
-        pendiente_final = pendiente if pendiente is not None else 0
-        n_rep_final = n_rep if (n_rep is not None and n_rep > 0) else 1
-        
-        # Convierto tiempo y ritmo de entrada (txt) a decimal
-        mins = tiempo_a_decimal(mins_input)
-        # if not ritmo.str.contains(':'):
-        #     ritmo = ritmo+':00'
-        
-        dist_s, mins_s, desnivel_s = serie_a_info(mins, dist, ritmo, pendiente_final, n_rep_final)
-        
-        if dist_s > 0:
-            # Guardamos en el diccionario de la sesión
-            st.session_state.lista_series.append({
-                'Minutos serie': decimal_a_tiempo(mins_s / n_rep_final),    # tiempo de una sola serie (sin repes)
-                'Repeticiones': n_rep_final,
-                'Minutos totales': decimal_a_tiempo(mins_s),
-                'Ritmo': ritmo,
-                'Pendiente': f'{pendiente_final}%',
-                # Convertimos a f-string para "congelar" los decimales como texto
-                'Distancia (km)': f"{dist_s:.2f}", 
-                'Desnivel + (m)': f"{desnivel_s:.1f}"
-            #     'Distancia (km)': round(dist_s, 2),
-            #     'Desnivel + (m)': round(desnivel_s, 1)
-            })
+    # Si se le ha olvidado meter el ritmo
+    if not ritmo: 
+        st.warning("¡Sin el ritmo no puedo calcular nada! :(")
+    else:
+        try:
+            # Por si acaso pendiente o n_repes se han quedado vacías (tomo por defecto 0% para la pendiente y 1 para las repes)
+            pendiente_final = pendiente if pendiente is not None else 0
+            n_rep_final = n_rep if (n_rep is not None and n_rep > 0) else 1
             
+            # Convierto tiempo y ritmo de entrada (txt) a decimal
+            mins = tiempo_a_decimal(mins_input)
+            # if not ritmo.str.contains(':'):
+            #     ritmo = ritmo+':00'
             
-            st.success(f"Serie añadida: {round(dist_s, 2)} km al {pendiente_final}%, {decimal_a_tiempo(mins_s)} mins ({ritmo}/km) y +{round(desnivel_s, 1)} m")
+            dist_s, mins_s, desnivel_s = serie_a_info(mins, dist, ritmo, pendiente_final, n_rep_final)
             
-            
-            # Tostadas de ánimo/desánimo jejeje (con probabilidad para no saturar)
-            
-            try:
-                prob_suerte = 0.5
-                # Generación de random (uniforme 0,1)
-                suerte = random.random()
+            if dist_s > 0:
+                # Guardamos en el diccionario de la sesión
+                st.session_state.lista_series.append({
+                    'Minutos serie': decimal_a_tiempo(mins_s / n_rep_final),    # tiempo de una sola serie (sin repes)
+                    'Repeticiones': n_rep_final,
+                    'Minutos totales': decimal_a_tiempo(mins_s),
+                    'Ritmo': ritmo,
+                    'Pendiente': f'{pendiente_final}%',
+                    # Convertimos a f-string para "congelar" los decimales como texto
+                    # 'Distancia (km)': f"{dist_s:.2f}", 
+                    # 'Desnivel + (m)': f"{desnivel_s:.1f}"
+                    'Distancia (km)': dist_s,
+                    'Desnivel + (m)': desnivel_s
+                })
                 
-                # Según ritmo
-                if st.session_state.gracia_rit and suerte < prob_suerte:
-                    if int(ritmo.split(':')[0]) >=7:
-                        st.toast("Un poco lento...", icon='🐌')
-                        st.session_state.gracia_rit = False
-                            
-                if st.session_state.gracia_rit_2 and suerte < prob_suerte:
-                    if int(ritmo.split(':')[0]) <5:    
-                        st.toast('¡Menuda velocidad!', icon='🐆')
-                        st.session_state.gracia_rit_2 = False
+                
+                st.success(f"Serie añadida: {round(dist_s, 2)} km al {pendiente_final}%, {decimal_a_tiempo(mins_s)} mins ({ritmo}/km) y +{round(desnivel_s, 1)} m")
+                
+                
+                # Tostadas de ánimo/desánimo jejeje (con probabilidad para no saturar)
+                
+                try:
+                    prob_suerte = 0.5
+                    # Generación de random (uniforme 0,1)
+                    suerte = random.random()
                     
-                # Según nº series
-                if st.session_state.gracia_cant and suerte < prob_suerte:
-                    if len(st.session_state.lista_series) > 4:
-                        st.toast(f"¡Madre mía cuántas series!", icon = '😯')
-                        st.session_state.gracia_cant = False
-                            
-            except:
-                pass
-        else:
-            st.warning('Mete información sobre la distancia o el tiempo porfi :) ¡si no, no se puede calcular nada!')
-    except Exception as e:
-        st.error("Algo has metido mal!!!")
+                    # Según ritmo
+                    if st.session_state.gracia_rit and suerte < prob_suerte:
+                        if int(ritmo.split(':')[0]) >=7:
+                            st.toast("Un poco lento...", icon='🐌')
+                            st.session_state.gracia_rit = False
+                                
+                    if st.session_state.gracia_rit_2 and suerte < prob_suerte:
+                        if int(ritmo.split(':')[0]) <5:    
+                            st.toast('¡Menuda velocidad!', icon='🐆')
+                            st.session_state.gracia_rit_2 = False
+                        
+                    # Según nº series
+                    if st.session_state.gracia_cant and suerte < prob_suerte:
+                        if len(st.session_state.lista_series) > 4:
+                            st.toast(f"¡Madre mía cuántas series!", icon = '😯')
+                            st.session_state.gracia_cant = False
+                                
+                except:
+                    pass
+            else:
+                st.warning('Mete información sobre la distancia o el tiempo porfi :) ¡si no, no se puede calcular nada!')
+        except Exception as e:
+            st.error("Algo has metido mal!!!")
 
 
 # --- MOSTRAR RESULTADOS ---
@@ -338,8 +350,8 @@ if st.session_state.lista_series:
 
     ## CÁLCULO DE GLOBALES
     mins_total = sum(tiempo_a_decimal(s['Minutos totales']) for s in st.session_state.lista_series)
-    dist_total = sum(float(s['Distancia (km)']) for s in st.session_state.lista_series)
-    desnivel_total = int(round(sum(float(s['Desnivel + (m)']) for s in st.session_state.lista_series), 0))
+    dist_total = sum(s['Distancia (km)'] for s in st.session_state.lista_series)
+    desnivel_total = int(round(sum(s['Desnivel + (m)'] for s in st.session_state.lista_series), 0))
     
     # Ritmo medio = tiempo total / distancia total 
     if dist_total > 0:
