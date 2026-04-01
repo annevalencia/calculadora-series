@@ -105,31 +105,30 @@ def saludar_segun_hora(hora_h):
     
     # Por la mañana pronto
     if 5 <= hora_h < 11:
-        saludos = ["¿Ya te has pegado el madrugón? Venga, ahora te puedes tomar un cafecico tranquilamente ☕",
-                   "Mientras otros siguen durmiendo, tú ya has cumplido, ¡de lujooo! 😉",
-                   'A quien madruga Dios le ayuda... veremos si ha merecido la pena 🤪',
-                   'Muy bien el madrugón, todo sea por mejorar para la UD Salinas ⚽']
+        saludos = ["¿Ya te has pegado el madrugón? Madre mía, ¡le echas ganas, eh!",
+                   "Mientras otros siguen durmiendo, tú ya has cumplido... ¡de lujooo! 😉",
+                   'Dicen que a quien madruga Dios le ayuda... veremos si ha merecido la pena 🤪',
+                   'Muy bien el madrugón, todo sea por mejorar para el UD Salinas ⚽']
         
     # Por la mañana tarde (antes de comer)
     elif 11 <= hora_h < 15:
-        saludos = ['¡Cumpliendo de buena mañana! Genial, así te has ganado la comida de hoy 😜',
+        saludos = ['¡Cumpliendo de buena mañana! Genial, la comida de hoy ya te la has ganado 😜',
                    'Venga, si te salen buenos resultados te habrás ganado el vermutico de antes de comer 🤓']
        
     # Por la tarde pronto
     elif 15 <= hora_h < 18:
         saludos = ["¡Hoooola! ¿Haciendo hueco para la merienda o qué? Venga, que seguro que te la has ganado 🍩",
-            "Espero que el entrenamiento haya sido mejor que la siesta que te estás perdiendo 😉"]
+                   "Espero que el entrenamiento haya sido mejor que la siesta que te estás perdiendo, chaval 😉"]
     
     # Por la tarde tarde
     elif 18 <= hora_h < 23:
-        saludos = [
-            "¿Esto qué es, un poco de entrenamiento antes de la caña de rigor? ¿O estamos más de pijama? 🍻😴",
-            "Pégate una duchica que Strava puede esperar unos minutos 🚿"]
+        saludos = ["¿Esto qué es, haciendo hueco antes a la caña de rigor? ¿O estamos más de pijama? 🍻😴",
+                   "Venga, pégate una duchica que Strava puede esperar unos minutos 🚿"]
         
     # Noche profunda
     else:
-        saludos = ['¿Pero qué horas son estas? ¿Te perseguía alguien? 👀',
-                   "¡A dormir! Que los resultados no van a cambiar por mucho que los mires a estas horas 😉"]
+        saludos = ['A ver, ¿pero qué horas son estas? ¿Te ha perseguido alguien? 👀',
+                   "¡A dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas 😉"]
     
     return random.choice(saludos)
 
@@ -138,17 +137,14 @@ def saludar_segun_hora(hora_h):
 
 ## --- Inicialización de algunas cosas ---
 list_frases_fin = ["Ya puedes estirar bien... 🧘‍♂️",
-                   "¡Yujuuuuu! Por lo menos una cañica te has ganado 🍻",
-                   'Nada mal 😉',
-                   '¡Oleeee! Lo único, tus cuádriceps perfectamente pueden pedir la baja mañana 🚑',
-                   'Bien hecho, ahora a esperar los Kuditos de los fans 🤠',
-                   'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo no se justifica 😉',
+                   '¡Oleeee! Lo único, tus pobres cuádriceps igual piden la baja 😬',
+                   '¡Yujuuuuu! Ahora a esperar lo que realmente querías: kudos 🤠',
+                   'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo... 😉',
                    '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',
-                   'Está muy bien para ser el calentamiento, ¿ahora la de verdad? 😜',
+                   'La verdad que muy bien para ser el calentamiento, ¿ahora toca la de verdad? 😜',
                    'Muy bien, pero corriendo en cinta no hay ni viento, ni barro... o sea que así cualquiera 🥱',
-                   'Con esto ya estás a puntito de llevarte medalla en la Elorz trail (pero la de chocolate) 🍫',
-                   'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... mucho ánimo 🙂'
-                   ]
+                   'Con esto ya estás a puntiiiito de llevarte medalla en la Elorz Trail (pero la de chocolate) 😜',
+                   'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... ¡a topeee! 🙂']
 
 # --- INICIALIZACIÓN DE MEMORIA (Sólo se ejecuta una vez al abrir la web) ---
 if 'lista_series' not in st.session_state:
@@ -328,8 +324,8 @@ if boton_añadir:
                             
                     # Según pendiente (si es 12% o más)
                     if st.session_state.gracia_pend and pendiente_final >= 12 and suerte < prob_suerte_2:
-                        frases_pendiente = ["¿Al 12%? No sabía que derrepente le hacías competencia a Kilian 😗",
-                                            "¿12%? Joder, eso en Cabo Cañaberal tiene que estar considerado ya alta montaña..."]
+                        frases_pendiente = [f"¿Al {pendiente_final}%? No sabía que derrepente le hacías competencia a Kilian 😗",
+                                            "{pendiente_final}%? Joder, eso en Cabo Cañaberal tiene que estar considerado ya alta montaña..."]
                         # Warning para que destaque más que un toast (que si no se va muy rápido)
                         st.warning(random.choice(frases_pendiente))
                         st.session_state.gracia_pend = False
@@ -415,14 +411,13 @@ if st.session_state.lista_series:
         # Resumen visual
         if desnivel_total >= 1000:
             frases_cima = ['¡¡1000m!! Ojito que a esa altura ya empieza a fatar el oxígeno 🥴',
-                           '¿Ya puedes abrigarte que a 1000m la nieve cuaja...!🥶',
-                           '¡FLIPO! Con este desnivel vas a necesitar piolets en vez de deportivas 🏔️']
+                           '¡¡+1000m en cinta!! Enhorabuena😘']
             st.snow()
             st.toast(random.choice(frases_cima))
         else:
             st.balloons()
         
-        st.header("📋 RESUMEN ")
+        st.header("🆙 RESUMEN ")
         col1, col2, col3, col4 = st.columns(4)
         # col1.metric("Tiempo", f"{decimal_a_tiempo(mins_total)} min")
         col1.metric("Tiempo", f"{txt_tiempo_total}")
