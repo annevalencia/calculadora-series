@@ -141,7 +141,8 @@ list_frases_fin = ["Ya puedes estirar bien... 🧘‍♂️",
                    '¡Yujuuuuu! Ahora a esperar lo que realmente querías: kudos 🤠',
                    'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo... 😉',
                    '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',
-                   'La verdad que muy bien para ser el calentamiento, ¿ahora toca la de verdad? 😜',
+                   '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',  # la repito porque es mi fav
+                   'Muy bien para ser el calentamiento, ¿ahora toca la de verdad? 😜',
                    'Muy bien, pero corriendo en cinta no hay ni viento, ni barro... o sea que así cualquiera 🥱',
                    'Con esto ya estás a puntiiiito de llevarte medalla en la Elorz Trail (pero la de chocolate) 😜',
                    'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... ¡a topeee! 🙂']
@@ -214,7 +215,7 @@ with col2:
     st.write(st.session_state.saludo_fijo)
     
     # Zona y hora en pequeñito
-    st.caption(f"{zona_horaria_txt}, {hora_h:02d}:{hora_actual_dt.minute:02d}")
+    st.caption(f"{zona_horaria_txt}, {hora_h:02d}:{hora_actual_dt.minute:02d}h")
 
     
 # Inicializamos la lista de series en la "memoria" de la web si no existe
@@ -294,11 +295,7 @@ if boton_añadir:
                 })
                 
                 
-                st.success(f"Serie añadida: {round(dist_s, 2)} km al {pendiente_final}%, {decimal_a_tiempo(mins_s)} mins ({ritmo}/km) y +{round(desnivel_s, 1)} m")
-                
-                
                 # Tostadas de ánimo/desánimo jejeje (con probabilidad para no saturar)
-                
                 try:
                     prob_suerte = 0.5
                     prob_suerte_2 = 0.75
@@ -325,13 +322,18 @@ if boton_añadir:
                     # Según pendiente (si es 12% o más)
                     if st.session_state.gracia_pend and pendiente_final >= 12 and suerte < prob_suerte_2:
                         frases_pendiente = [f"¿Al {pendiente_final}%? No sabía que derrepente le hacías competencia a Kilian 😗",
-                                            "{pendiente_final}%? Joder, eso en Cabo Cañaberal tiene que estar considerado ya alta montaña..."]
+                                            f"¿{pendiente_final}%? Joder, eso en Cabo Cañaberal tiene que estar considerado ya alta montaña..."]
                         # Warning para que destaque más que un toast (que si no se va muy rápido)
                         st.warning(random.choice(frases_pendiente))
                         st.session_state.gracia_pend = False
                                 
                 except:
                     pass
+                
+                # RESUMEN DE LA SERIE
+                st.success(f"Serie añadida: {round(dist_s, 2)} km al {pendiente_final}%, {decimal_a_tiempo(mins_s)} mins ({ritmo}/km) y +{round(desnivel_s, 1)} m")
+                
+                
             else:
                 st.warning('Mete información sobre la distancia o el tiempo porfi :) ¡si no, no se puede calcular nada!')
         except Exception as e:
