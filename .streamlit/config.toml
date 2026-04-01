@@ -5,5 +5,5 @@ secondaryBackgroundColor = "#262a36" # Color de las cajas de entrada
 textColor = "#FAFAFA"           # Color del texto
 font = "sans serif"             # Tipo de letra
 
-[client]
-toolbarMode = "hidden"
+#[client]
+#toolbarMode = "hidden"
