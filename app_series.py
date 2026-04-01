@@ -139,11 +139,16 @@ def saludar_segun_hora(hora_h):
 ## --- Inicialización de algunas cosas ---
 list_frases_fin = ["Ya puedes estirar bien... 🧘‍♂️",
                    "¡Yujuuuuu! Por lo menos una cañica te has ganado 🍻",
-                   'Nada mal... para ser tú 😉',
+                   'Nada mal 😉',
                    '¡Oleeee! Lo único, tus cuádriceps perfectamente pueden pedir la baja mañana 🚑',
                    'Bien hecho, ahora a esperar los Kuditos de los fans 🤠',
-                   'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo no impresiona 😉',
-                   '¡Estupendo! Pero sube ya la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔']
+                   'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo no se justifica 😉',
+                   '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',
+                   'Está muy bien para ser el calentamiento, ¿ahora la de verdad? 😜',
+                   'Muy bien, pero corriendo en cinta no hay ni viento, ni barro... o sea que así cualquiera 🥱',
+                   'Con esto ya estás a puntito de llevarte medalla en la Elorz trail (pero la de chocolate) 🍫',
+                   'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... mucho ánimo 🙂'
+                   ]
 
 # --- INICIALIZACIÓN DE MEMORIA (Sólo se ejecuta una vez al abrir la web) ---
 if 'lista_series' not in st.session_state:
@@ -158,6 +163,9 @@ if 'gracia_rit' not in st.session_state:
 if 'gracia_rit_2' not in st.session_state:
     st.session_state.gracia_rit_2 = True                   
 
+if 'gracia_pend' not in st.session_state:
+    st.session_state.gracia_pend = True
+    
 if 'form_id' not in st.session_state:
     st.session_state.form_id = 0
 
@@ -297,6 +305,7 @@ if boton_añadir:
                 
                 try:
                     prob_suerte = 0.5
+                    prob_suerte_2 = 0.65
                     # Generación de random (uniforme 0,1)
                     suerte = random.random()
                     
@@ -307,15 +316,23 @@ if boton_añadir:
                             st.session_state.gracia_rit = False
                                 
                     if st.session_state.gracia_rit_2 and suerte < prob_suerte:
-                        if int(ritmo.split(':')[0]) <5:    
+                        if int(ritmo.split(':')[0]) <4:    
                             st.toast('¡Menuda velocidad!', icon='🐆')
                             st.session_state.gracia_rit_2 = False
                         
                     # Según nº series
                     if st.session_state.gracia_cant and suerte < prob_suerte:
-                        if len(st.session_state.lista_series) > 4:
+                        if len(st.session_state.lista_series) > 6:
                             st.toast(f"¡Madre mía cuántas series!", icon = '😯')
                             st.session_state.gracia_cant = False
+                            
+                    # Según pendiente (si es 12% o más)
+                    if st.session_state.gracia_pend and pendiente_final >= 12 and suerte < prob_suerte_2:
+                        frases_pendiente = ["¿Al 12%? No sabía que derrepente le hacías competencia a Kilian 😗",
+                                            "¿12%? Joder, eso en Cabo Cañaberal tiene que estar considerado ya alta montaña..."]
+                        # Warning para que destaque más que un toast (que si no se va muy rápido)
+                        st.warning(random.choice(frases_pendiente))
+                        st.session_state.gracia_pend = False
                                 
                 except:
                     pass
@@ -425,4 +442,5 @@ if st.session_state.lista_series:
         st.session_state.gracia_cant = True
         st.session_state.gracia_rit = True
         st.session_state.gracia_rit_2 = True
+        st.session_state.gracia_pend = True
         st.rerun()
