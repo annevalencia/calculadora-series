@@ -214,6 +214,31 @@ with col2:
     # Utilizo el saludo guardado en la sesión
     st.write(st.session_state.saludo_fijo)
     
+    
+    # Cuenta atrás para la carrera
+    fecha_carrera = datetime(2026, 4, 25, 10, 0, 0)
+    ahora = obtener_hora_local(zona_horaria)
+    diferencia = fecha_carrera - ahora
+    
+    if diferencia.total_seconds() > 0:
+        # Calculamos días, horas y minutos
+        dias = diferencia.days
+        horas, resto = divmod(diferencia.seconds, 3600)
+        minutos, _ = divmod(resto, 60)
+    
+        # diseño llamativo
+        st.markdown(f"""
+            <div style="background-color: #262a36; padding: 15px; border-radius: 10px; border: 1px solid #8d4bff; text-align: center; margin-bottom: 20px;">
+                <p style="margin: 0; color: #b183ff; font-weight: bold; font-size: 14px;">⏳ ELORZ TRAIL ⏳</p>
+                <p style="margin: 0; font-size: 24px; font-weight: bold; color: #FAFAFA;">
+                    {dias}d {horas}h {minutos}m
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.success("Veeeeeenga, a conseguir el local de la Elorz Trail!!! ⛰️😘")
+    
+    
+    
     # Zona y hora en pequeñito
     st.caption(f"{zona_horaria_txt}, {hora_h:02d}:{hora_actual_dt.minute:02d}h")
 
