@@ -11,7 +11,11 @@ Created on Mon Mar 30 16:48:43 2026
 import streamlit as st
 import math
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+
+st.set_page_config(page_title="Calculadora de series", page_icon="😎")
+
 
 
 ## --- FUNCIONES ---
@@ -45,20 +49,44 @@ def decimal_a_tiempo(tiempo_dec):
     
 
 # Función cálculo serie
-def serie_a_info(mins_serie, dist_serie, ritmo, pendiente=0, n_rep=1):
+def serie_a_info(mins_serie, dist_serie, ritmo_val, unidad_ritmo, pendiente=0, n_rep=1):
     """
     Dos opciones: que meta X mins o que meta X kms:
+    Además, el ritmo puede estar en min/km o en km/h
+        ritmo_val: puede ser un string '5:30' o un float 12.5
+        unidad_ritmo: 'min/km' o 'km/h'
+    
     """
     
     ## RITMO
-    ritmo_mins = int(ritmo.split(':')[0])
-    ritmo_segs = int(ritmo.split(':')[1])
-    ritmo_decimal = ritmo_mins + ritmo_segs/60
+    # ritmo_mins = int(ritmo.split(':')[0])
+    # ritmo_segs = int(ritmo.split(':')[1])
+    # ritmo_decimal = ritmo_mins + ritmo_segs/60
+    
+    # Convertir el ritmo que sea a "ritmo decimal" (minutos por km)
+    # min/km
+    if unidad_ritmo == 'min/km':
+        if ':' in ritmo_val:
+            m, s = map(int, ritmo_val.split(':'))
+            ritmo_decimal = m + (s / 60)
+        else:
+            ritmo_decimal = float(ritmo_val)
+            
+    # km/h
+    else:
+        # Ritmo = 60 / Velocidad
+        # Ejemplo: 10 km/h -> 60/10 = 6 min/km
+        velocidad = float(ritmo_val)
+        if velocidad > 0:
+            ritmo_decimal = 60 / velocidad
+        else:
+            # ritmo_decimal = 1.0 # Evitamos dividir por cero si pone 0 km/h.0
+            st.error('¿Cómo vas a correr a 0km/h?👀 Corrígelo porfi :)')
     
     
     # Si hay info de mins y kms o no hay de ninguna
     if ((mins_serie is None) & (dist_serie is None)) or ((mins_serie is not None) & (dist_serie is not None)):
-        st.error('Mete sólo o la distancia o el tiempo porfi (además del ritmo), que si no igual se vuelve loco :)')
+        st.error('Mete sólo o la distancia o el tiempo porfa (además del ritmo), que si no igual se vuelve loco :)')
     
     # La serie va por DISTANCIA 
     if mins_serie is None:
@@ -91,7 +119,7 @@ elif zona_horaria == 'MADRID':
     zona_horaria_txt = 'Pamplona'
 
 def obtener_hora_local(zona):
-    ahora_utc = datetime.utcnow()    
+    ahora_utc = datetime.now(timezone.utc) 
     if zona == 'FLORIDA':
         # Cabo Cañaveral es UTC-4 (por lo menos para verano)
         return ahora_utc - timedelta(hours=4)
@@ -106,29 +134,32 @@ def saludar_segun_hora(hora_h):
     # Por la mañana pronto
     if 5 <= hora_h < 11:
         saludos = ["¿Ya te has pegado el madrugón? Madre mía, ¡le echas ganas, eh!",
-                   "Mientras otros siguen durmiendo, tú ya has cumplido... ¡de lujooo! 😉",
+                   # "Mientras otros siguen durmiendo, tú ya has cumplido... ¡de lujooo! 😉",
                    'Dicen que a quien madruga Dios le ayuda... veremos si ha merecido la pena 🤪',
                    'Muy bien el madrugón, todo sea por mejorar para el UD Salinas ⚽']
         
     # Por la mañana tarde (antes de comer)
     elif 11 <= hora_h < 15:
-        saludos = ['¡Cumpliendo de buena mañana! Genial, la comida de hoy ya te la has ganado 😜',
-                   'Venga, si te salen buenos resultados te habrás ganado el vermutico de antes de comer 🤓']
+        saludos = [#'¡Cumpliendo de buena mañana! Genial, la comida de hoy ya te la has ganado 😜',
+                   #'Venga, si te salen buenos resultados te habrás ganado el vermutico de antes de comer 🤓'
+                   "Venga, mete esto rápido que tienes que tener hambre ya ;)"]
        
     # Por la tarde pronto
     elif 15 <= hora_h < 18:
-        saludos = ["¡Hoooola! ¿Haciendo hueco para la merienda o qué? Venga, que seguro que te la has ganado 🍩",
-                   "Espero que el entrenamiento haya sido mejor que la siesta que te estás perdiendo, chaval 😉"]
+        saludos = [#"¡Hoooola! ¿Haciendo hueco para la merienda o qué? Venga, que seguro que te la has ganado 🍩",
+                   "Espero que la cinta haya ido mejor que la siesta que te estás perdiendo, chaval 😉",
+                   "A ver qué has hecho, que la merienda no se gana sola...🍩"]
     
     # Por la tarde tarde
     elif 18 <= hora_h < 23:
-        saludos = ["¿Esto qué es, haciendo hueco antes a la caña de rigor? ¿O estamos más de pijama? 🍻😴",
-                   "Venga, pégate una duchica que Strava puede esperar unos minutos 🚿"]
+        saludos = [#"¿Esto qué es, haciendo hueco antes a la caña de rigor? ¿O estamos más de pijama? 🍻😴",
+                   "Venga, pégate una duchica que Strava puede esperar unos minutos 🚿",
+                   "¡Venga, haz esto rapidico y a cenar!"]
         
     # Noche profunda
     else:
-        saludos = ['A ver, ¿pero qué horas son estas? ¿Te ha perseguido alguien? 👀',
-                   "¡A dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas 😉"]
+        saludos = ['A ver, ¿pero qué horas son estas?👀',
+                   "¡Tira a dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas😉"]
     
     return random.choice(saludos)
 
@@ -137,15 +168,15 @@ def saludar_segun_hora(hora_h):
 
 ## --- Inicialización de algunas cosas ---
 list_frases_fin = ["Ya puedes estirar bien... 🧘‍♂️",
-                   '¡Oleeee! Lo único, tus pobres cuádriceps igual piden la baja 😬',
+                   # '¡Oleeee! Lo único, tus pobres cuádriceps igual piden la baja 😬',
                    '¡Yujuuuuu! Ahora a esperar lo que realmente querías: kudos 🤠',
-                   'Not bad, pero en Strava pon que tenías viento en contra, que si no el ritmo... 😉',
-                   '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',
-                   '¡Estupendo! Ahora a subir la captura de la frecuencia cardíaca, que queremos ver cómo finges que no has sufrido nada 💔',  # la repito porque es mi fav
+                   'Not bad, pero en Strava puedes poner que tenías viento en contra, que si no el ritmo... 😉',
+                   'Ya estás tardando en subir la captura de las pulsaciones, que queremos ver cómo (no) has sufrido 💔',
+                   'Ya estás tardando en subir la captura de las pulsaciones, que queremos ver cómo (no) has sufrido 💔',  # la repito porque es mi fav
                    'Muy bien para ser el calentamiento, ¿ahora toca la de verdad? 😜',
-                   'Muy bien, pero corriendo en cinta no hay ni viento, ni barro... o sea que así cualquiera 🥱',
-                   'Con esto ya estás a puntiiiito de llevarte medalla en la Elorz Trail (pero la de chocolate) 😜',
-                   'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... ¡a topeee! 🙂']
+                   'Muy bien, pero en cinta no hay ni viento, ni barro... así cualquiera🥱',
+                   '¡Con esto ya estás a puntiiiito de conseguir medalla en la Elorz Trail! (pero la de chocolate)😜',
+                   'La verdad que entrenar trail en Florida está jodido, pero oye no desistes... ¡a topeee!🙂']
 
 # --- INICIALIZACIÓN DE MEMORIA (Sólo se ejecuta una vez al abrir la web) ---
 if 'lista_series' not in st.session_state:
@@ -191,7 +222,6 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # --- CONFIGURACIÓN DE LA APP ---
 
-st.set_page_config(page_title="Calculadora de series", page_icon="😎")
 # st.title("Calculadora series - resumen")
 
 
@@ -216,7 +246,7 @@ with col2:
     
     
     # Cuenta atrás para la carrera
-    fecha_carrera = datetime(2026, 4, 25, 10, 0, 0)
+    fecha_carrera = datetime(2026, 4, 25, 10, 0, 0, tzinfo=timezone.utc)
     ahora = obtener_hora_local(zona_horaria)
     diferencia = fecha_carrera - ahora
     
@@ -248,7 +278,11 @@ if 'lista_series' not in st.session_state:
     st.session_state.lista_series = []
 
 # --- FORMULARIO DE ENTRADA ---
-
+# Selector de unidad y entrada de ritmo
+c_uni1, c_uni2 = st.columns([0.4, 0.6])
+with c_uni1:
+    unidad = st.radio("¿En qué lo vas a medir?", ["min/km", "km/h"], horizontal=True, key=f"uni_{st.session_state.form_id}")
+    
 with st.form("entrada_serie"):
     st.subheader("Serie:")
     c1, c2 = st.columns(2)
@@ -265,7 +299,13 @@ with st.form("entrada_serie"):
             
         # mins = st.number_input('Minutos de la serie:', min_value=1, value=5)
         # dist = st.number_input('Kms de la serie:', min_value=0, value=5)
-        ritmo = st.text_input('Ritmo (mins/km):', value=None, help="Acepta el formato mm:ss, por ejemplo: '6:30' o '6:00'", key=f"ritmo_{st.session_state.form_id}")
+        
+        if unidad == "min/km":
+            ritmo = st.text_input('Ritmo (mins/km):', value=None, placeholder="6:00", help="Tiene que ser de la forma 'mm:ss'", key=f"ritmo_{st.session_state.form_id}")
+        else:
+            ritmo = st.number_input('Velocidad (km/h):', min_value=0.0, value=None, step=0.1, help="Por ejemplo: 5 (5km/h), 5.5 (5.5km/h)... Para los decimales, tienes que usar el punto (.) en vez de la coma", key=f"vel_{st.session_state.form_id}")
+        # ritmo = st.text_input('Ritmo (mins/km):', value=None, help="Acepta el formato mm:ss, por ejemplo: '6:30' o '6:00'", key=f"ritmo_{st.session_state.form_id}")
+        
     with c2:
         pendiente = st.number_input('Pendiente (%):', min_value=0, value=0, key=f"pend_{st.session_state.form_id}")
         n_rep = st.number_input('Número de repeticiones:', min_value=1, value=1, key=f"rep_{st.session_state.form_id}")
@@ -302,17 +342,32 @@ if boton_añadir:
             # if not ritmo.str.contains(':'):
             #     ritmo = ritmo+':00'
             
-            dist_s, mins_s, desnivel_s = serie_a_info(mins, dist, ritmo, pendiente_final, n_rep_final)
+            dist_s, mins_s, desnivel_s = serie_a_info(mins, dist, ritmo, unidad, pendiente_final, n_rep_final)
             
             if dist_s > 0:
-                # Guardamos en el diccionario de la sesión
+                
+                # Calculo para velocidad/ritmo para poder mostrar ambas
+                if unidad == "min/km":
+                    # Si ha metido ritmo, calculo la velocidad correspondiente
+                    ritmo_str = ritmo
+                    m, s = map(int, ritmo_str.split(':'))
+                    r_dec = m + (s / 60)
+                    vel_str = f"{60 / r_dec:.1f}"
+                else:
+                    # Si ha metido velocidad, calculo el ritmo correspondiente
+                    vel_str = f"{float(ritmo):.1f}"
+                    r_dec = 60 / float(ritmo)
+                    ritmo_str = decimal_a_tiempo(r_dec)
+                # Guardar en el diccionario de la sesión
                 st.session_state.lista_series.append({
                     'Minutos serie': decimal_a_tiempo(mins_s / n_rep_final),    # tiempo de una sola serie (sin repes)
                     'Repeticiones': n_rep_final,
                     'Minutos totales': decimal_a_tiempo(mins_s),
-                    'Ritmo': ritmo,
+                    # 'Ritmo': ritmo,
+                    'Ritmo (min/km)': ritmo_str,
+                    'Velocidad (km/h)': vel_str,
                     'Pendiente': f'{pendiente_final}%',
-                    # Convertimos a f-string para "congelar" los decimales como texto
+                    # Convertir a f-string para "congelar" los decimales como texto
                     # 'Distancia (km)': f"{dist_s:.2f}", 
                     # 'Desnivel + (m)': f"{desnivel_s:.1f}"
                     'Distancia (km)': dist_s,
@@ -335,13 +390,13 @@ if boton_añadir:
                                 
                     if st.session_state.gracia_rit_2 and suerte < prob_suerte:
                         if int(ritmo.split(':')[0]) <4:    
-                            st.toast('¡Menuda velocidad!', icon='🐆')
+                            st.toast('Wowww ¡menuda velocidad!', icon='🐆')
                             st.session_state.gracia_rit_2 = False
                         
                     # Según nº series
                     if st.session_state.gracia_cant and suerte < prob_suerte:
                         if len(st.session_state.lista_series) > 6:
-                            st.toast(f"¡Madre mía cuántas series!", icon = '😯')
+                            st.toast(f"Joe qué largo es esto", icon = '😯')
                             st.session_state.gracia_cant = False
                             
                     # Según pendiente (si es 12% o más)
@@ -399,6 +454,8 @@ if st.session_state.lista_series:
         ritmo_mins_f = math.trunc(ritmo_medio)
         ritmo_secs_decimal = ritmo_medio - ritmo_mins_f
         ritmo_secs_f = round(ritmo_secs_decimal * 60, 0)
+        # # Para redondear bien (a partir del .5 va al siguiente), sumo 0.5 y trunco (el truco del almendruco, vamos)
+        # ritmo_secs_f = int(ritmo_secs_decimal * 60 + 0.5)
         
         # Formatear segundos para que siempre tengan dos dígitos (ej: 05 en vez de 5)
         ritmo_medio_mmss = f"{ritmo_mins_f}:{int(ritmo_secs_f):02d}"
