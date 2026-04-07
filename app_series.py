@@ -136,30 +136,36 @@ def saludar_segun_hora(hora_h):
         saludos = ["¿Ya te has pegado el madrugón? Madre mía, ¡le echas ganas, eh!",
                    # "Mientras otros siguen durmiendo, tú ya has cumplido... ¡de lujooo! 😉",
                    'Dicen que a quien madruga Dios le ayuda... veremos si ha merecido la pena 🤪',
-                   'Muy bien el madrugón, todo sea por mejorar para el UD Salinas ⚽']
+                   'Muy bien el madrugón, todo sea por mejorar para el UD Salinas ⚽',
+                   'Good morning :)']
         
     # Por la mañana tarde (antes de comer)
     elif 11 <= hora_h < 15:
         saludos = [#'¡Cumpliendo de buena mañana! Genial, la comida de hoy ya te la has ganado 😜',
                    #'Venga, si te salen buenos resultados te habrás ganado el vermutico de antes de comer 🤓'
-                   "Venga, mete esto rápido que tienes que tener hambre ya ;)"]
+                   "Venga, mete esto rápido que tienes que tener hambre ya ;)",
+                   'Hola :)',
+                   'Buenos días, haz lo que vayas a hacer y a comer!!']
        
     # Por la tarde pronto
     elif 15 <= hora_h < 18:
         saludos = [#"¡Hoooola! ¿Haciendo hueco para la merienda o qué? Venga, que seguro que te la has ganado 🍩",
                    "Espero que la cinta haya ido mejor que la siesta que te estás perdiendo, chaval 😉",
-                   "A ver qué has hecho, que la merienda no se gana sola...🍩"]
+                   "A ver qué has hecho, que la merienda no se gana sola...🍩",
+                   'Buenas tardes :)']
     
     # Por la tarde tarde
     elif 18 <= hora_h < 23:
         saludos = [#"¿Esto qué es, haciendo hueco antes a la caña de rigor? ¿O estamos más de pijama? 🍻😴",
                    "Venga, pégate una duchica que Strava puede esperar unos minutos 🚿",
-                   "¡Venga, haz esto rapidico y a cenar!"]
+                   "¡Venga, haz esto rapidico y a cenar!",
+                   'Hola :)']
         
     # Noche profunda
     else:
         saludos = ['A ver, ¿pero qué horas son estas?👀',
-                   "¡Tira a dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas😉"]
+                   "¡Tira a dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas😉",
+                   'Vaya horas, esto ya es adicción pero de las malas.']
     
     return random.choice(saludos)
 
@@ -495,7 +501,7 @@ if st.session_state.lista_series:
         # Resumen visual
         if desnivel_total >= 1000:
             frases_cima = ['¡¡1000m!! Ojito que a esa altura ya empieza a fatar el oxígeno 🥴',
-                           '¡¡+1000m en cinta!! Enhorabuena😘']
+                           '¡¡+1000m en cinta!! Enhorabuena chaval😘']
             st.snow()
             st.toast(random.choice(frases_cima))
         else:
