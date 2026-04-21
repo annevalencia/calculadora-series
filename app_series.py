@@ -112,7 +112,8 @@ def serie_a_info(mins_serie, dist_serie, ritmo_val, unidad_ritmo, pendiente=0, n
 
 # Para obtener la hora en función del lugar
 # Poner MADRID o FLORIDA en función de lo que quiera
-zona_horaria = 'FLORIDA'
+# zona_horaria = 'FLORIDA'
+zona_horaria = 'MADRID'
 if zona_horaria == 'FLORIDA':
     zona_horaria_txt = 'Florida'
 elif zona_horaria == 'MADRID':
@@ -161,7 +162,7 @@ def saludar_segun_hora(hora_h):
                    "¡Venga, haz esto rapidico y a cenar!",
                    'Hola :)']
         
-    # Noche profunda
+    # Noche muy noche
     else:
         saludos = ['A ver, ¿pero qué horas son estas?👀',
                    "¡Tira a dormir! Que los ritmos no van a cambiar por mucho que los mires a estas horas😉",
